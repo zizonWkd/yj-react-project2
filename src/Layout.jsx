@@ -1,58 +1,56 @@
-import { Text, Box, VStack, HStack } from '@chakra-ui/react'
-import {HiArrowSmDown} from "react-icons/hi"
-import {FaHome} from "react-icons/fa"
-import {ImProfile} from "react-icons/im"
-import {AiFillPhone} from "react-icons/ai"
-import { Link } from 'react-router-dom'
+import { Text, Box, HStack, VStack } from "@chakra-ui/react";
+import { AiFillApple, AiFillHome, AiFillProfile, AiFillContacts, AiOutlineArrowLeft } from "react-icons/ai";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
+const GNB = [
+  { title: "홈", href: "/", icon: AiFillHome },
+  { title: "프로필", href: "/profile", icon: AiFillProfile },
+  { title: "연락처", href: "/contact", icon: AiFillContacts },
+];
 
-export default function Layout({children}) {
+export default function Layout({ children, canGoBack, title }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  console.log(location.pathname);
+
+  const handleClick = () => {
+    navigate(-1)
+  }
+
   return (
     <>
-      <Box w={'full'} display="flex" justifyContent={'center'}>
-        <VStack w={'sm'}>
-          {/*헤더*/}
-          <Box
-          zIndex={99}
-            justifyContent={'center'}
-            alignItems={'center'}
-            display={'flex'} 
-            w={'inherit'}
-            h={'120px'}
-            bg={'yellow.200'} 
-            position={'fixed'} 
-            top={0}
-          >
-              <HiArrowSmDown size={32} color="red" />
+      <Box w="full" display="flex" justifyContent={"center"}>
+        <VStack w="sm">
+          {/* 헤더 */}
+          <Box display="flex" justifyContent="center" alignItems="center" w="inherit" h="120px" bg="black" position="fixed" top={0} zIndex={"9"}>
+            <Box onClick={handleClick} position={"absolute"} left={"20px"} cursor={"pointer"}>
+              <AiOutlineArrowLeft color="white" size="20px" />
             </Box>
-            {/*본문*/}
-            {children}
-          
-          <Box w={'inherit'} h={'120px'} bg={'red.200'} position={'fixed'} bottom={0} padding={'10px'}>
-              <HStack h={'inherit'} justifyContent={'space-between'} alignItems={'Center'}>
-                <Link to="/">
-                <VStack w={'full'}>
-                  <FaHome/>
-                  <Text>홈</Text>
-                </VStack>
-                </Link>
-                <Link to="/profile">
-                <VStack w={'full'}>
-                  <ImProfile/>
-                  <Text>프로필</Text>
-                </VStack>
-                </Link>
-                <Link to="/contact">
-                <VStack w={'full'}>
-                  <AiFillPhone/>
-                  <Text>연락처</Text>
-                </VStack>
-                </Link>
-              </HStack>
-            </Box>
+            {canGoBack ? <Text color={"white"}>{title}</Text> : <AiFillApple size={32} color="white" />}
+          </Box>
+
+          {/* 본문 */}
+          {children}
+
+          {/* tail */}
+          {canGoBack ? null : (
+          <Box w="inherit" h="120px" bg="black" position="fixed" bottom={0}>
+            <HStack h="inherit" justifyContent="space-between" alignItems="center">
+              {GNB.map((item) => (
+                <Box w="full">
+                  <Link to={item.href}>
+                    <VStack w="full">
+                      <item.icon size={24} color={location.pathname === item.href ? "red" : "white"} />
+                      <Text color={location.pathname === item.href ? "red.600" : "white"}>{item.title}</Text>
+                    </VStack>
+                  </Link>
+                </Box>
+              ))}
+            </HStack>
+          </Box>
+          )}
         </VStack>
       </Box>
     </>
   );
 }
-
